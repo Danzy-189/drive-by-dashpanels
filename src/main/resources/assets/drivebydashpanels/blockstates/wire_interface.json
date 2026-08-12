@@ -1,0 +1,7 @@
+{
+  "variants": {
+    "": {
+      "model": "drivebydashpanels:block/wire_interface"
+    }
+  }
+}

@@ -1,10 +1,8 @@
 {
-  "itemGroup.drivebydashpanels": "Drive by DashPanels",
-  "block.drivebydashpanels.wire_transmitter": "Panel Wire Transmitter",
-  "block.drivebydashpanels.wire_receiver": "Panel Wire Receiver",
-  "drivebydashpanels.message.channels": "%s wire channels: %s",
-  "drivebydashpanels.message.no_channels": "No panel inputs found. Attach this block to a panel or a panel cable.",
-  "drivebydashpanels.message.target": "Target module: %s, signal: %s",
-  "drivebydashpanels.message.no_target": "No target module. Right-click with a renamed name tag to pick one.",
-  "drivebydashpanels.message.target_set": "Target module set to %s"
+  "block.drivebydashpanels.wire_interface": "Panel Wire Interface",
+  "drivebydashpanels.interface.no_network": "No Dashpanels network found next to this interface.",
+  "drivebydashpanels.interface.inputs": "Panel \u2192 wire channels:",
+  "drivebydashpanels.interface.outputs": "Wire \u2192 panel channels:",
+  "drivebydashpanels.interface.entry": "  %1$s = %2$s",
+  "drivebydashpanels.interface.none": "  (none)"
 }

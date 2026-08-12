@@ -1,0 +1,46 @@
+modLoader = "javafml"
+loaderVersion = "[4,)"
+license = "MIT"
+issueTrackerURL = "https://github.com/Danzy-189/drive-by-dashpanels/issues"
+
+[[mods]]
+modId = "drivebydashpanels"
+version = "0.1.0"
+displayName = "Drive by DashPanels"
+authors = "Danzy"
+displayURL = "https://github.com/Danzy-189/drive-by-dashpanels"
+description = '''
+Bridges Drive-By-Wire wire networks and Dashpanels module networks.
+
+The Panel Wire Interface block turns every input module of an attached panel
+network into a Drive-By-Wire channel, and drives output modules from wires that
+end on the interface.
+'''
+
+[[dependencies.drivebydashpanels]]
+modId = "neoforge"
+type = "required"
+versionRange = "[21.1.235,)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.drivebydashpanels]]
+modId = "minecraft"
+type = "required"
+versionRange = "[1.21.1,1.22)"
+ordering = "NONE"
+side = "BOTH"
+
+[[dependencies.drivebydashpanels]]
+modId = "drivebywire"
+type = "required"
+versionRange = "[0,)"
+ordering = "AFTER"
+side = "BOTH"
+
+[[dependencies.drivebydashpanels]]
+modId = "dashpanels"
+type = "required"
+versionRange = "[0,)"
+ordering = "AFTER"
+side = "BOTH"
