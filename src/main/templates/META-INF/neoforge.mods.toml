@@ -1,0 +1,43 @@
+modLoader="javafml"
+loaderVersion="${loader_version_range}"
+license="${mod_license}"
+issueTrackerURL="https://github.com/Danzy-189/drive-by-dashpanels/issues"
+
+[[mods]]
+modId="${mod_id}"
+version="${mod_version}"
+displayName="${mod_name}"
+authors="${mod_authors}"
+displayURL="https://github.com/Danzy-189/drive-by-dashpanels"
+description='''
+Connects Dashpanels control panels to the Drive-By-Wire cable network.
+Every panel input becomes a wire channel, and wire signals can drive panel outputs.
+'''
+
+[[dependencies.${mod_id}]]
+    modId="neoforge"
+    type="required"
+    versionRange="${neo_version_range}"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="minecraft"
+    type="required"
+    versionRange="${minecraft_version_range}"
+    ordering="NONE"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="dashpanels"
+    type="required"
+    versionRange="${dashpanels_version_range}"
+    ordering="AFTER"
+    side="BOTH"
+
+[[dependencies.${mod_id}]]
+    modId="drivebywire"
+    type="required"
+    versionRange="${drivebywire_version_range}"
+    ordering="AFTER"
+    side="BOTH"

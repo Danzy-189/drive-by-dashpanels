@@ -1,0 +1,7 @@
+{
+  "replace": false,
+  "values": [
+    "drivebydashpanels:wire_transmitter",
+    "drivebydashpanels:wire_receiver"
+  ]
+}

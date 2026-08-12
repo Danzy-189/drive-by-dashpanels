@@ -1,0 +1,10 @@
+{
+  "itemGroup.drivebydashpanels": "Drive by DashPanels",
+  "block.drivebydashpanels.wire_transmitter": "Передатчик панели",
+  "block.drivebydashpanels.wire_receiver": "Приёмник панели",
+  "drivebydashpanels.message.channels": "Каналов: %s. Список: %s",
+  "drivebydashpanels.message.no_channels": "Модули не найдены. Прикрепите блок к панели или к кабелю панели.",
+  "drivebydashpanels.message.target": "Целевой модуль: %s, сигнал: %s",
+  "drivebydashpanels.message.no_target": "Модуль не выбран. Кликните по блоку переименованной биркой.",
+  "drivebydashpanels.message.target_set": "Целевой модуль: %s"
+}
