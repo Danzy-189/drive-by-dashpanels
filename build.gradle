@@ -92,6 +92,19 @@ dependencies {
     compileOnly "maven.modrinth:drive-by-wire-sable:${drivebywire_version}"
 }
 
+// Packages owned by Dashpanels / Drive-By-Wire that only exist here as compile-only API stubs.
+// Shipping the compiled stubs would create split packages with the real mods, which makes the
+// JPMS module resolution fail at launch:
+//   "Modules drivebydashpanels and drivebywire export package edn.stratodonut.drivebywire.wire ..."
+def stubPackages = [
+        'edn/stratodonut/**',
+        'moth/boxxed/**',
+]
+
+tasks.named('jar').configure {
+    exclude stubPackages
+}
+
 var generateModMetadata = tasks.register('generateModMetadata', ProcessResources) {
     var replaceProperties = [
             minecraft_version         : minecraft_version,
