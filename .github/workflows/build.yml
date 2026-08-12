@@ -1,0 +1,68 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '21'
+
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v4
+        with:
+          gradle-version: '8.12'
+
+      - name: Build mod jar
+        run: |
+          set -o pipefail
+          gradle --no-daemon --stacktrace build 2>&1 | tee build.log
+
+      - name: Report build failure
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          tail -c 55000 build.log > build-tail.log || true
+          {
+            echo "Commit: ${GITHUB_SHA}"
+            echo "Run: ${GITHUB_SERVER_URL}/${GITHUB_REPOSITORY}/actions/runs/${GITHUB_RUN_ID}"
+            echo
+            echo '```'
+            cat build-tail.log
+            echo '```'
+          } > issue-body.md
+          gh issue create --title "CI build failed (${GITHUB_SHA:0:7})" --body-file issue-body.md --label ci || true
+
+      - name: Upload jar artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: drivebydashpanels-jar
+          path: build/libs/*.jar
+          if-no-files-found: error
+
+      - name: Publish release
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          VERSION=$(grep '^mod_version=' gradle.properties | cut -d '=' -f2)
+          TAG="v${VERSION}-build${GITHUB_RUN_NUMBER}"
+          gh release create "${TAG}" build/libs/*.jar \
+            --title "Drive by DashPanels ${VERSION} (build ${GITHUB_RUN_NUMBER})" \
+            --notes "Automated build of ${GITHUB_SHA}. Minecraft 1.21.1 / NeoForge 21.1.235. Requires Dashpanels and Drive-By-Wire with Sable."

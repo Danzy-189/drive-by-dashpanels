@@ -1,0 +1,128 @@
+plugins {
+    id 'java-library'
+    id 'net.neoforged.moddev' version '2.0.141'
+    id 'idea'
+}
+
+version = mod_version
+group = mod_group_id
+
+base {
+    archivesName = mod_id
+}
+
+// Mojang ships Java 21 to end users on 1.21.1, so the mod targets Java 21 as well.
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
+
+repositories {
+    exclusiveContent {
+        forRepository {
+            maven {
+                name = 'Modrinth'
+                url = 'https://api.modrinth.com/maven'
+            }
+        }
+        filter {
+            includeGroup 'maven.modrinth'
+        }
+    }
+}
+
+configurations {
+    // Mod jars whose nested (jarJar) libraries need to be unpacked before we can compile against them.
+    extractedDeps
+}
+
+neoForge {
+    version = project.neo_version
+
+    parchment {
+        mappingsVersion = project.parchment_mappings_version
+        minecraftVersion = project.parchment_minecraft_version
+    }
+
+    runs {
+        client {
+            client()
+        }
+
+        server {
+            server()
+            programArgument '--nogui'
+        }
+
+        configureEach {
+            systemProperty 'forge.logging.markers', 'REGISTRIES'
+            logLevel = org.slf4j.event.Level.DEBUG
+        }
+    }
+
+    mods {
+        "${mod_id}" {
+            sourceSet(sourceSets.main)
+        }
+    }
+}
+
+def extractedJarsDir = layout.buildDirectory.dir('extracted-jars')
+
+// Dashpanels bundles Sable Companion as a nested jar. Unpack it so javac can resolve those types.
+tasks.register('extractNestedJars', Copy) {
+    from {
+        configurations.extractedDeps.collect { zipTree(it) }
+    }
+    include 'META-INF/jarjar/*.jar'
+    eachFile { relativePath = new RelativePath(true, it.name) }
+    includeEmptyDirs = false
+    into extractedJarsDir
+}
+
+tasks.named('compileJava').configure {
+    dependsOn 'extractNestedJars'
+}
+
+dependencies {
+    // Dashpanels: compiled against directly (module API, panel networks).
+    compileOnly "maven.modrinth:dashpanels:${dashpanels_version}"
+    extractedDeps "maven.modrinth:dashpanels:${dashpanels_version}"
+    compileOnly fileTree(dir: extractedJarsDir, include: '*.jar')
+
+    // Drive-By-Wire: only the tiny MultiChannelWireSource interface is compiled against,
+    // the network calls go through WireBridge so a Drive-By-Wire update can never hard-crash us.
+    compileOnly "maven.modrinth:drive-by-wire-sable:${drivebywire_version}"
+}
+
+var generateModMetadata = tasks.register('generateModMetadata', ProcessResources) {
+    var replaceProperties = [
+            minecraft_version         : minecraft_version,
+            minecraft_version_range   : minecraft_version_range,
+            neo_version               : neo_version,
+            neo_version_range         : neo_version_range,
+            loader_version_range      : loader_version_range,
+            mod_id                    : mod_id,
+            mod_name                  : mod_name,
+            mod_license               : mod_license,
+            mod_version               : mod_version,
+            mod_authors               : mod_authors,
+            dashpanels_version_range  : dashpanels_version_range,
+            drivebywire_version_range : drivebywire_version_range,
+    ]
+    inputs.properties replaceProperties
+    expand replaceProperties
+    from 'src/main/templates'
+    into 'build/generated/sources/modMetadata'
+}
+
+sourceSets.main.resources.srcDir generateModMetadata
+neoForge.ideSyncTask generateModMetadata
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
+}
